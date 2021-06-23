@@ -132,7 +132,13 @@ def convert_mp(mp):
     if mp.MUL() or mp.CMD_TIMES() or mp.CMD_CDOT():
         lh = convert_mp(mp_left)
         rh = convert_mp(mp_right)
-        return sympy.Mul(lh, rh, evaluate=False)
+
+        from sympy.physics.units.quantities import Quantity
+
+        if isinstance(rh, Quantity):
+            return sympy.Mul(lh, rh.scale_factor)
+        else:
+            return sympy.Mul(lh, rh, evaluate=False)
     elif mp.DIV() or mp.CMD_DIV() or mp.COLON():
         lh = convert_mp(mp_left)
         rh = convert_mp(mp_right)
@@ -295,6 +301,9 @@ def convert_atom(atom):
         s = atom.SYMBOL().getText()[1:]
         if s == "infty":
             return sympy.oo
+        elif s == "textdegree":
+            from sympy.physics.units import degree
+            return degree
         else:
             if atom.subexpr():
                 subscript = None
