@@ -135,6 +135,7 @@ def convert_mp(mp):
 
         from sympy.physics.units.quantities import Quantity
 
+        # If we encounter a quantity on the right side, we apply its scale factor
         if isinstance(rh, Quantity):
             return sympy.Mul(lh, rh.scale_factor)
         else:
