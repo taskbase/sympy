@@ -135,6 +135,12 @@ def convert_mp(mp):
 
         from sympy.physics.units.quantities import Quantity
 
+        # If we encounter a quantity on the right side, we multiply its scale factor
+        # to whatever is on the left side and expect the expression to evaluate,
+        # avoiding to obtain 90*pi/180 for 90°, but rather get pi/2.
+        # This way we implicitly translate degrees to radians during parsing.
+        # Since sympy works internally with radians, expressions like sin(90°)
+        # cannot be evaluated (for sin(90), 90 is interpreted as a radian).
         if isinstance(rh, Quantity):
             return sympy.Mul(lh, rh.scale_factor)
         else:
