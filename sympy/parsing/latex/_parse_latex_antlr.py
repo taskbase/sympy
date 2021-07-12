@@ -389,7 +389,7 @@ def convert_frac(frac):
     # This ensures fractions like `\\frac{5}{x(y+z)}` will be properly parsed by surrounding
     # the denominator with brackets. Without it we obtain `5/x(y + z)` where the denominator is not a proper Mul object.
     # Hence, further computation is not really possible.
-    expr_bot = parse_expr(str(expr_bot), transformations=transformations)
+    expr_bot = parse_expr(str(expr_bot), transformations=transformations, evaluate=False)
 
     return sympy.Mul(
         expr_top, sympy.Pow(expr_bot, -1, evaluate=False), evaluate=False)
