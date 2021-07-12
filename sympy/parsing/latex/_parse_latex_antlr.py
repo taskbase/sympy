@@ -132,7 +132,19 @@ def convert_mp(mp):
     if mp.MUL() or mp.CMD_TIMES() or mp.CMD_CDOT():
         lh = convert_mp(mp_left)
         rh = convert_mp(mp_right)
-        return sympy.Mul(lh, rh, evaluate=False)
+
+        from sympy.physics.units.quantities import Quantity
+
+        # If we encounter a quantity on the right side, we multiply its scale factor
+        # to whatever is on the left side and expect the expression to evaluate,
+        # avoiding to obtain 90*pi/180 for 90°, but rather get pi/2.
+        # This way we implicitly translate degrees to radians during parsing.
+        # Since sympy works internally with radians, expressions like sin(90°)
+        # cannot be evaluated (for sin(90), 90 is interpreted as a radian).
+        if isinstance(rh, Quantity):
+            return sympy.Mul(lh, rh.scale_factor)
+        else:
+            return sympy.Mul(lh, rh, evaluate=False)
     elif mp.DIV() or mp.CMD_DIV() or mp.COLON():
         lh = convert_mp(mp_left)
         rh = convert_mp(mp_right)
@@ -295,6 +307,9 @@ def convert_atom(atom):
         s = atom.SYMBOL().getText()[1:]
         if s == "infty":
             return sympy.oo
+        elif s == "textdegree":
+            from sympy.physics.units import degree
+            return degree
         else:
             if atom.subexpr():
                 subscript = None
