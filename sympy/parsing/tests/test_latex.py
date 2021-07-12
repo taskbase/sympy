@@ -2,12 +2,15 @@ from sympy.testing.pytest import raises, XFAIL
 from sympy.external import import_module
 
 from sympy import (
-    Symbol, Mul, Add, Eq, Abs, sin, asin, cos, Pow,
+    Symbol, Mul, Add, Eq, Ne, Lt, Le, Gt, Ge, Abs, sin, asin, cos, Pow,
     csc, sec, Limit, oo, Derivative, Integral, factorial,
     sqrt, root, StrictLessThan, LessThan, StrictGreaterThan,
     GreaterThan, Sum, Product, E, log, tan, Function, binomial, exp,
     floor, ceiling, Unequality
 )
+
+from sympy.physics.quantum import Bra, Ket
+
 from sympy.abc import x, y, z, a, b, c, t, k, n
 antlr4 = import_module("antlr4")
 

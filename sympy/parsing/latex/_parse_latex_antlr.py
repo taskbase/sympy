@@ -366,6 +366,16 @@ def convert_frac(frac):
 
     expr_top = convert_expr(frac.upper)
     expr_bot = convert_expr(frac.lower)
+
+    from sympy.parsing.sympy_parser import (parse_expr, standard_transformations, implicit_multiplication)
+    transformations = standard_transformations + (implicit_multiplication,)
+
+    # re-parsing here with implicit_multiplication ensures we convert to explicit multiplication.
+    # This ensures fractions like `\\frac{5}{x(y+z)}` will be properly parsed by surrounding
+    # the denominator with brackets. Without it we obtain `5/x(y + z)` where the denominator is not a proper Mul object.
+    # Hence, further computation is not really possible.
+    expr_bot = parse_expr(str(expr_bot), transformations=transformations)
+
     return sympy.Mul(
         expr_top, sympy.Pow(expr_bot, -1, evaluate=False), evaluate=False)
 
